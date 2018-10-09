@@ -2,9 +2,11 @@ Spawning meshes
 ------------------------------
 
 Examples of spawned scenes
-<img src="imgs/First.png">
-<img src="imgs/Second.png">
-<img src="imgs/Third.png">
+![](../imgs/First.png)
+
+![](../imgs/Second.png)
+
+![](../imgs/Third.png)
 
 ### How to spawn static meshes with python
 
