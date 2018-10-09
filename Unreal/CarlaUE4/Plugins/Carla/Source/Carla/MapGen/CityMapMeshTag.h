@@ -68,6 +68,27 @@ enum class ECityMapMeshTag : uint8
   RoadXIntersection_Sidewalk3         UMETA(DisplayName = "Road: X-Intersection - Sidewalk 3"),
   RoadXIntersection_LaneMarking       UMETA(DisplayName = "Road: X-Intersection - Lane Marking"),
 
+  /*
+   * BUILDINGS
+   */
+
+  House_AmerSuburb002_N2              UMETA(DisplayName = "Building: House suburb 002"),
+  House_AmerSuburb003_N2              UMETA(DisplayName = "Building: House suburb 003"),
+  House_AmerSuburb004_N2              UMETA(DisplayName = "Building: House suburb 004"),
+  House_AmerSuburb005_N5              UMETA(DisplayName = "Building: House suburb 005"),
+  House_AmerSuburb006_N2              UMETA(DisplayName = "Building: House suburb 006"),
+
+  Props_Bench                         UMETA(DisplayName = "Prop: bench"),
+  Props_Trashcan                      UMETA(DisplayName = "Prop: Trashcan"),
+  Props_BusStop                       UMETA(DisplayName = "Prop: Bus stop"),
+  Props_FireHydrant                   UMETA(DisplayName = "Prop: Fire hydrant"),
+
+  /*
+   * Vehicles
+   */
+  Vehicle_Toyota_prius                UMETA(DisplayName = "Vehicle: Toyota prius"),
+  Vehicle_mini                        UMETA(DisplayName = "Vehicle: mini"),
+
   NUMBER_OF_TAGS         UMETA(Hidden),
   INVALID                UMETA(Hidden)
 };

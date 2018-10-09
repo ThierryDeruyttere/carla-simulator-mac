@@ -93,6 +93,7 @@ namespace client {
       case rpc::ActorAttributeType::Float:    As<rpc::ActorAttributeType::Float>();    break;
       case rpc::ActorAttributeType::String:   As<rpc::ActorAttributeType::String>();   break;
       case rpc::ActorAttributeType::RGBColor: As<rpc::ActorAttributeType::RGBColor>(); break;
+
       default:
         LIBCARLA_THROW_INVALID_VALUE("invalid value type");
     }

@@ -32,6 +32,7 @@ FActorSpawnResult ASensorFactory::SpawnActor(
   {
     return {};
   }
+
   auto *Sensor = World->SpawnActorDeferred<ASceneCaptureCamera>(
       Description.Class,
       Transform,

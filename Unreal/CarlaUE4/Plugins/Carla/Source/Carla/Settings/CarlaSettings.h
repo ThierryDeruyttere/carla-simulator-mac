@@ -258,7 +258,7 @@ public:
     * used, we only enable it if necessary.
     */
   UPROPERTY(Category = "Sensors", BlueprintReadOnly, VisibleAnywhere)
-  bool bSemanticSegmentationEnabled = false;
+  bool bSemanticSegmentationEnabled = true;
 
   /// @}
 };

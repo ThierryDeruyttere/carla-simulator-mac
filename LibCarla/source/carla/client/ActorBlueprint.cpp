@@ -24,7 +24,7 @@ namespace client {
 
   ActorBlueprint::ActorBlueprint(rpc::ActorDefinition definition)
     : _uid(definition.uid),
-      _id(std::move(definition.id)) {
+      _id(std::move(definition.id)), _class_id(definition.class_id) {
     StringUtil::Split(_tags, definition.tags, ",");
     FillMap(_attributes, definition.attributes);
   }
@@ -39,6 +39,7 @@ namespace client {
     rpc::ActorDescription description;
     description.uid = _uid;
     description.id = _id;
+    description.class_id = _class_id;
     description.attributes.reserve(_attributes.size());
     for (const auto &attribute : *this) {
       if (attribute.IsModifiable()) {

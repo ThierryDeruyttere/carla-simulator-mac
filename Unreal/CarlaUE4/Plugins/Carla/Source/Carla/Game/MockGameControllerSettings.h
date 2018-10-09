@@ -30,7 +30,7 @@ struct CARLA_API FMockGameControllerSettings
 
   /** If true, semantic segmentation will be always enabled even if no camera needs it. */
   UPROPERTY(EditAnywhere, Category = "Mock CARLA Controller")
-  bool bForceEnableSemanticSegmentation = false;
+  bool bForceEnableSemanticSegmentation = true;
 
 #if WITH_EDITORONLY_DATA
 

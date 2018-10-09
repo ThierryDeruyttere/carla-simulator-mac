@@ -22,6 +22,8 @@ namespace rpc {
 
     uint32_t uid = 0u;
 
+    uint32_t class_id = 0u;
+
     std::string id;
 
     std::string tags;
@@ -32,8 +34,9 @@ namespace rpc {
 
     ActorDefinition(const FActorDefinition &Definition)
       : uid(Definition.UId),
+        class_id(Definition.Class_id),
         id(FromFString(Definition.Id)),
-        tags(FromFString(Definition.Tags)) {
+        tags(FromFString(Definition.Tags)){
       attributes.reserve(Definition.Variations.Num() + Definition.Attributes.Num());
       for (const auto &Item : Definition.Variations) {
         attributes.push_back(Item);
@@ -45,7 +48,7 @@ namespace rpc {
 
 #endif // LIBCARLA_INCLUDED_FROM_UE4
 
-    MSGPACK_DEFINE_ARRAY(uid, id, tags, attributes);
+    MSGPACK_DEFINE_ARRAY(uid, class_id, id, tags, attributes);
   };
 
 } // namespace rpc

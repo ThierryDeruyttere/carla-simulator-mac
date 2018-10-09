@@ -42,7 +42,7 @@ namespace client {
   }
 
   std::ostream &operator<<(std::ostream &out, const ActorBlueprint &bp) {
-    out << "ActorBlueprint(id=" << bp.GetId() << "tags=" << bp.GetTags() << ')';
+    out << "ActorBlueprint(id=" << bp.GetId() << " tags=" << bp.GetTags() << ')';
     return out;
   }
 
@@ -64,6 +64,7 @@ void export_blueprint() {
     .value("Float", crpc::ActorAttributeType::Float)
     .value("String", crpc::ActorAttributeType::String)
     .value("RGBColor", crpc::ActorAttributeType::RGBColor)
+    .value("JSON", crpc::ActorAttributeType::JSON)
   ;
 
   class_<cc::Color>("Color")

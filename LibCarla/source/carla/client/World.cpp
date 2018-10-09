@@ -17,6 +17,7 @@ namespace client {
       const ActorBlueprint &blueprint,
       const Transform &transform,
       Actor *parent) {
+
     try {
       return SpawnActor(blueprint, transform, parent);
     } catch (const ::rpc::rpc_error &e) {

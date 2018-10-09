@@ -80,6 +80,12 @@ public:
       FActorDefinition &Definition);
 
   UFUNCTION(Category = "Carla Actor", BlueprintCallable)
+  static void MakeMeshHolderDefinition(
+      const FCameraParameters &Parameters,
+      bool &Success,
+      FActorDefinition &Definition);
+
+  UFUNCTION(Category = "Carla Actor", BlueprintCallable)
   static void MakeVehicleDefinition(
       const FVehicleParameters &Parameters,
       bool &Success,

@@ -45,4 +45,12 @@ struct FActorDefinition
   /// help the user identifying and filtering actors.
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TArray<FActorAttribute> Attributes;
+
+  // CUSTOM
+  UPROPERTY(EditAnywhere, BlueprintReadWrite)
+  FString Name;
+
+  //UPROPERTY(EditAnywhere)
+  uint32 Class_id = 0;
+
 };

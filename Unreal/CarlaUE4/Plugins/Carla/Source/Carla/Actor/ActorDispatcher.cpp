@@ -15,6 +15,7 @@ void FActorDispatcher::Bind(FActorDefinition Definition, SpawnFunctionType Funct
   if (UActorBlueprintFunctionLibrary::CheckActorDefinition(Definition))
   {
     Definition.UId = static_cast<uint32>(SpawnFunctions.Num()) + 1u;
+    UE_LOG(LogCarla, Log, TEXT("%s got id '%d'"), *Definition.Name ,Definition.UId);
     Definitions.Emplace(Definition);
     SpawnFunctions.Emplace(Functor);
     Classes.Emplace(Definition.Class);
@@ -46,6 +47,7 @@ TPair<EActorSpawnResultStatus, FActorView> FActorDispatcher::SpawnActor(
   }
 
   UE_LOG(LogCarla, Log, TEXT("Spawning actor '%s'"), *Description.Id);
+  UE_LOG(LogCarla, Log, TEXT("UId '%d'"), Description.UId);
 
   Description.Class = Classes[Description.UId - 1];
   auto Result = SpawnFunctions[Description.UId - 1](Transform, Description);

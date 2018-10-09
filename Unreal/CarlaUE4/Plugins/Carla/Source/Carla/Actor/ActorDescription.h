@@ -23,7 +23,8 @@ struct FActorDescription
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   FString Id;
 
-  /// Class of the actor to be spawned.
+
+    /// Class of the actor to be spawned.
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TSubclassOf<AActor> Class;
 
@@ -34,4 +35,9 @@ struct FActorDescription
   ///   Value: The attribute.
   UPROPERTY(EditAnywhere, BlueprintReadWrite)
   TMap<FString, FActorAttribute> Variations;
+
+  // CUSTOM
+  //UPROPERTY(EditAnywhere)
+  uint32 Class_id = 0;
+
 };

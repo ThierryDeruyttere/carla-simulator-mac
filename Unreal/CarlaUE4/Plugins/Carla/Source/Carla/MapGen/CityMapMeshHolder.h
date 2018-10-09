@@ -54,7 +54,7 @@ protected:
 
   /// Return the 3D world location (relative to this actor) of the given 2D
   /// tile.
-  FVector GetTileLocation(uint32 X, uint32 Y) const;
+  FVector GetTileLocation(int32 X, int32 Y) const;
 
   /// Set the static mesh associated with @a Tag.
   void SetStaticMesh(ECityMapMeshTag Tag, UStaticMesh *Mesh);
@@ -72,14 +72,14 @@ protected:
   ///   @param Tag The mesh' tag
   ///   @param X Tile coordinate X
   ///   @param Y Tile coordinate Y
-  void AddInstance(ECityMapMeshTag Tag, uint32 X, uint32 Y);
+  void AddInstance(ECityMapMeshTag Tag, int32 X, int32 Y);
 
   /// Add an instance of a mesh with a given tile location and rotation.
   ///   @param Tag The mesh' tag
   ///   @param X Tile coordinate X
   ///   @param Y Tile coordinate Y
   ///   @param Angle Rotation around Z axis
-  void AddInstance(ECityMapMeshTag Tag, uint32 X, uint32 Y, float Angle);
+  void AddInstance(ECityMapMeshTag Tag, int32 X, int32 Y, float Angle);
 
   /// Add an instance of a mesh with a given transform.
   ///   @param Tag The mesh' tag

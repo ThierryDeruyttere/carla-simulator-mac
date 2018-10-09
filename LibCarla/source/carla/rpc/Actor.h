@@ -36,11 +36,16 @@ namespace rpc {
       return stream_token.size() == sizeof(streaming::Token::data);
     }
 
+
     streaming::Token GetStreamToken() const {
       DEBUG_ASSERT(IsASensor());
       streaming::Token token;
       std::memcpy(&token.data[0u], stream_token.data(), stream_token.size());
       return token;
+    }
+
+    ActorDescription GetActorDescription() const{
+        return description;
     }
 
     /// @}

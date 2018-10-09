@@ -164,7 +164,7 @@ private:
     * applied to objects having this value active.
     */
   UPROPERTY(Category = "Road Map", EditAnywhere, AdvancedDisplay)
-  bool bTagForSemanticSegmentation = false;
+  bool bTagForSemanticSegmentation = true;
 
   UPROPERTY()
   URoadMap *RoadMap;

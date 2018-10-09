@@ -114,7 +114,7 @@ fi
 
 if ${REMOVE_INTERMEDIATE} ; then
 
-  rm -f Makefile 
+  rm -f Makefile
   rm -rf CarlaUe4.xcworkspace
 
 fi

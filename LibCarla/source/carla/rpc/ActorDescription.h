@@ -26,11 +26,14 @@ namespace rpc {
 
     std::vector<ActorAttributeValue> attributes;
 
+    //CUSTOM
+    uint32_t class_id = 0u;
+
 #ifdef LIBCARLA_INCLUDED_FROM_UE4
 
     ActorDescription(const FActorDescription &Description)
       : uid(Description.UId),
-        id(FromFString(Description.Id)) {
+        id(FromFString(Description.Id)), class_id(Description.Class_id) {
       attributes.reserve(Description.Variations.Num());
       for (const auto &Item : Description.Variations) {
         attributes.emplace_back(Item.Value);
@@ -41,6 +44,7 @@ namespace rpc {
       FActorDescription Description;
       Description.UId = uid;
       Description.Id = ToFString(id);
+      Description.Class_id = class_id;
       Description.Variations.Reserve(attributes.size());
       for (const auto &item : attributes) {
         Description.Variations.Emplace(ToFString(item.id), item);
@@ -50,7 +54,7 @@ namespace rpc {
 
 #endif // LIBCARLA_INCLUDED_FROM_UE4
 
-    MSGPACK_DEFINE_ARRAY(uid, id, attributes);
+    MSGPACK_DEFINE_ARRAY(uid, class_id, id, attributes);
   };
 
 } // namespace rpc

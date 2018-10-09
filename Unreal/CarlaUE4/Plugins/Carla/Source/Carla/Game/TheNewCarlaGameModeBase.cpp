@@ -57,6 +57,8 @@ void ATheNewCarlaGameModeBase::BeginPlay()
     check(GetWorld() != nullptr);
     ATagger::TagActorsInLevel(*GetWorld(), true);
     TaggerDelegate->SetSemanticSegmentationEnabled();
+    UE_LOG(LogCarla, Log, TEXT("Semantic segmentation enabled"));
+
   }
 
   Episode->InitializeAtBeginPlay();
@@ -81,6 +83,7 @@ void ATheNewCarlaGameModeBase::SpawnActorFactories()
 {
   auto *World = GetWorld();
   check(World != nullptr);
+
 
   for (auto &FactoryClass : ActorFactories)
   {

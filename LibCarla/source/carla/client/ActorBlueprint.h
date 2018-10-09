@@ -118,6 +118,11 @@ namespace client {
     std::unordered_set<std::string> _tags;
 
     std::unordered_map<std::string, ActorAttribute> _attributes;
+
+    // CUSTOM
+
+    uint32_t _class_id = 0u;
+
   };
 
 } // namespace client

@@ -25,6 +25,7 @@ void UCarlaEpisode::InitializeAtBeginPlay()
   {
     FActorDescription Description;
     Description.Id = TEXT("spectator");
+    Description.Class_id = 0;
     Description.Class = Spectator->GetClass();
     ActorDispatcher.GetActorRegistry().Register(*Spectator, Description);
   }

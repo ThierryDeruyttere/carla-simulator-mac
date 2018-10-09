@@ -193,8 +193,11 @@ void UActorBlueprintFunctionLibrary::MakeCameraDefinition(
 {
   Definition.Id = JoinStrings(TEXT("."), TEXT("sensor"), Parameters.Id).ToLower();
   Definition.Class = Parameters.Class;
+  Definition.Name = "Camera";
   Definition.Tags = JoinStrings(TEXT(","), TEXT("sensor"), Parameters.Id).ToLower();
-  // Post-processing.
+  Definition.Class_id = 2;
+
+    // Post-processing.
   FActorVariation PostProcessing;
   PostProcessing.Id = TEXT("post_processing");
   PostProcessing.Type = EActorAttributeType::String;
@@ -227,6 +230,29 @@ void UActorBlueprintFunctionLibrary::MakeCameraDefinition(
   Success = CheckActorDefinition(Definition);
 }
 
+void UActorBlueprintFunctionLibrary::MakeMeshHolderDefinition(
+        const FCameraParameters &Parameters,
+        bool &Success,
+        FActorDefinition &Definition){
+
+  Definition.Id = JoinStrings(TEXT("."), TEXT("meshholder"), Parameters.Id).ToLower();
+  Definition.Class = Parameters.Class;
+  Definition.Tags = JoinStrings(TEXT(","), TEXT("meshholder"), Parameters.Id).ToLower();
+  Definition.Name = "Mesh";
+  Definition.Class_id = 3;
+
+  // Post-processing.
+    /// @todo We need to validate here the params.
+  FActorVariation Scene;
+  Scene.Id = TEXT("scene");
+  Scene.Type = EActorAttributeType::String;
+  Scene.RecommendedValues.Add("{}");
+
+  Definition.Variations.Emplace(Scene);
+
+  Success = CheckActorDefinition(Definition);
+}
+
 void UActorBlueprintFunctionLibrary::MakeVehicleDefinition(
     const FVehicleParameters &Parameters,
     bool &Success,
@@ -235,6 +261,8 @@ void UActorBlueprintFunctionLibrary::MakeVehicleDefinition(
   /// @todo We need to validate here the params.
   Definition.Id = JoinStrings(TEXT("."), Parameters.Make, Parameters.Model).ToLower();
   Definition.Class = Parameters.Class;
+  Definition.Name = "Vehicle";
+  Definition.Class_id = 1;
   Definition.Tags = JoinStrings(TEXT(","), TEXT("vehicle"), Parameters.Make, Parameters.Model).ToLower();
   FActorVariation Colors;
   Colors.Id = TEXT("color");

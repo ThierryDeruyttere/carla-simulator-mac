@@ -10,16 +10,20 @@
 #include "carla/client/BlueprintLibrary.h"
 #include "carla/client/Control.h"
 #include "carla/client/Sensor.h"
+#include "carla/client/MeshHolder.h"
 #include "carla/client/Vehicle.h"
 #include "carla/client/World.h"
+#include "carla/Logging.h"
 
 #include <thread>
+#include <iostream>
 
 namespace carla {
 namespace client {
 
   Client::Client(const std::string &host, uint16_t port, size_t worker_threads)
     : _client(host, port) {
+
     _streaming_client.AsyncRun(
         worker_threads > 0u ? worker_threads : std::thread::hardware_concurrency());
   }
@@ -48,9 +52,32 @@ namespace client {
     auto actor = parent != nullptr ?
         Call<carla::rpc::Actor>("spawn_actor_with_parent", transform, blueprint.MakeActorDescription(), parent->Serialize()) :
         Call<carla::rpc::Actor>("spawn_actor", transform, blueprint.MakeActorDescription());
-    if (actor.IsASensor()) {
-      return SharedPtr<Actor>(new Sensor{actor, GetWorld()});
+
+    auto description = actor.GetActorDescription();
+
+    // If Vehicle
+    switch(description.class_id){
+        case 1: {
+          // Vehicle
+          return SharedPtr<Actor>(new Vehicle{actor, GetWorld()});
+
+        }
+        case 2: {
+          // Sensor
+          return SharedPtr<Actor>(new Sensor{actor, GetWorld()});
+
+        }
+        case 3: {
+          // MeshGen
+          return SharedPtr<Actor>(new MeshHolder{actor, GetWorld()});
+
+        }
     }
+
+    if (actor.IsASensor()) {
+        return SharedPtr<Actor>(new Sensor{actor, GetWorld()});
+    }
+
     return SharedPtr<Actor>(new Vehicle{actor, GetWorld()});
   }
 
@@ -86,5 +113,10 @@ namespace client {
     _client.call("set_actor_autopilot", actor.Serialize(), enabled);
   }
 
+  void Client::SetScene(
+            Actor &actor,
+            const std::string& scene) {
+      _client.call("set_scene", actor.Serialize(), scene);
+  }
 } // namespace client
 } // namespace carla

@@ -88,7 +88,7 @@ void ACityMapMeshHolder::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 // -- Other protected methods --------------------------------------------------
 // =============================================================================
 
-FVector ACityMapMeshHolder::GetTileLocation(uint32 X, uint32 Y) const
+FVector ACityMapMeshHolder::GetTileLocation(int32 X, int32 Y) const
 {
   return {X * MapScale, Y * MapScale, 0.0f};
 }
@@ -97,6 +97,8 @@ void ACityMapMeshHolder::SetStaticMesh(ECityMapMeshTag Tag, UStaticMesh *Mesh)
 {
   StaticMeshes[Tag] = Mesh;
   if (Mesh != nullptr) {
+    UE_LOG(LogCarla, Log,
+           TEXT("Mesh is nullptr"));
     TagMap.Add(Mesh, Tag);
   }
 }
@@ -117,12 +119,12 @@ ECityMapMeshTag ACityMapMeshHolder::GetTag(const UStaticMesh &StaticMesh) const
   return (Tag != nullptr ? *Tag : ECityMapMeshTag::INVALID);
 }
 
-void ACityMapMeshHolder::AddInstance(ECityMapMeshTag Tag, uint32 X, uint32 Y)
+void ACityMapMeshHolder::AddInstance(ECityMapMeshTag Tag, int32 X, int32 Y)
 {
   AddInstance(Tag, FTransform(GetTileLocation(X, Y)));
 }
 
-void ACityMapMeshHolder::AddInstance(ECityMapMeshTag Tag, uint32 X, uint32 Y, float Angle)
+void ACityMapMeshHolder::AddInstance(ECityMapMeshTag Tag, int32 X, int32 Y, float Angle)
 {
   const FQuat rotation(FVector(0.0f, 0.0f, 1.0f), Angle);
   const FVector location = GetTileLocation(X, Y);
@@ -135,11 +137,15 @@ void ACityMapMeshHolder::AddInstance(ECityMapMeshTag Tag, FTransform Transform)
   params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
   FVector location = Transform.GetLocation();
   FRotator rotation = Transform.Rotator();
-  AStaticMeshActor* StaticMeshActor = Cast<AStaticMeshActor>(GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(),&location,&rotation,params));
+
+  AStaticMeshActor* StaticMeshActor = Cast<AStaticMeshActor>(
+    GetWorld()->SpawnActor(AStaticMeshActor::StaticClass(),&location,&rotation,params)
+  );
+
   StaticMeshActor->AttachToActor(this,FAttachmentTransformRules::KeepRelativeTransform);
   StaticMeshActor->SetMobility(EComponentMobility::Static);
   UStaticMeshComponent* staticmeshcomponent = StaticMeshActor->GetStaticMeshComponent();
-  staticmeshcomponent->SetMobility(EComponentMobility::Static);
+  staticmeshcomponent->SetMobility(EComponentMobility::Movable);
   staticmeshcomponent->SetStaticMesh(GetStaticMesh(Tag));
   StaticMeshActor->Tags.Add(UCarlaSettings::CARLA_ROAD_TAG);
   StaticMeshActor->bEnableAutoLODGeneration = true;
@@ -186,7 +192,8 @@ void ACityMapMeshHolder::UpdateMapScale()
     MapScale = 1.0f;
   } else {
     FVector size = mesh->GetBoundingBox().GetSize();
-    MapScale = size.X;
+    //BIGGEST CHANGE!!!!!
+    MapScale = 1;//size.X;
   }
 }
 

@@ -39,6 +39,7 @@
 // =============================================================================
 
 #include <iostream>
+#include <fstream>      // std::ofstream
 
 namespace carla {
 
@@ -92,6 +93,14 @@ namespace logging {
   template <typename ... Args>
   static inline void log_warning(Args && ... args) {
     logging::write_to_stream(std::cerr, "WARNING:", std::forward<Args>(args) ..., '\n');
+  }
+
+  template <typename ... Args>
+  static inline void log_warning_to_file(Args && ... args) {
+    std::ofstream outfile;
+    outfile.open("/tmp/MYLOGS.txt", std::ofstream::out | std::ofstream::app);
+    logging::write_to_stream(outfile, "WARNING:", std::forward<Args>(args) ..., '\n');
+    outfile.close();
   }
 
 #else

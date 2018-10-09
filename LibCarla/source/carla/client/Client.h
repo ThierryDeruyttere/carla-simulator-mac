@@ -95,6 +95,10 @@ namespace client {
         Actor &actor,
         bool enabled = true);
 
+      void SetScene(
+              Actor &MapGen,
+              const std::string &scene);
+
   private:
 
     carla::rpc::Client _client;

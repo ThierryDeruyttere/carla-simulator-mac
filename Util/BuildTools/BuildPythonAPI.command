@@ -77,7 +77,7 @@ if ${BUILD_FOR_PYTHON2} ; then
 
   log "Building Python API for Python 2."
 
-  /usr/bin/env python2 setup.py bdist_egg
+  /usr/bin/env python setup.py bdist_egg
 
 fi
 

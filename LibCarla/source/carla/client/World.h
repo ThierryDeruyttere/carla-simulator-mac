@@ -10,6 +10,7 @@
 #include "carla/NonCopyable.h"
 #include "carla/client/Client.h"
 #include "carla/client/Memory.h"
+#include "carla/Logging.h"
 
 namespace carla {
 namespace client {
@@ -52,7 +53,7 @@ namespace client {
 
     explicit World(SharedPtr<Client> parent)
       : _parent(std::move(parent)) {
-      DEBUG_ASSERT(_parent != nullptr);
+        DEBUG_ASSERT(_parent != nullptr);
     }
 
     SharedPtr<Client> _parent;

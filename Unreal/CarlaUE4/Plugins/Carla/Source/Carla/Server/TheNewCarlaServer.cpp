@@ -47,27 +47,27 @@ static void AttachActors(AActor *Child, AActor *Parent)
 class FStreamingSensorDataSink : public ISensorDataSink {
 public:
 
-  FStreamingSensorDataSink(carla::streaming::Stream InStream)
-    : TheStream(InStream) {}
+    FStreamingSensorDataSink(carla::streaming::Stream InStream)
+            : TheStream(InStream) {}
 
-  ~FStreamingSensorDataSink()
-  {
-    UE_LOG(LogCarlaServer, Log, TEXT("Destroying sensor data sink"));
-  }
+    ~FStreamingSensorDataSink()
+    {
+      UE_LOG(LogCarlaServer, Log, TEXT("Destroying sensor data sink"));
+    }
 
-  void Write(const FSensorDataView &SensorData) final {
-    auto MakeBuffer = [](FReadOnlyBufferView View) {
-      return boost::asio::buffer(View.GetData(), View.GetSize());
-    };
-    std::array<boost::asio::const_buffer, 2u> SequencedBuffer;
-    SequencedBuffer[0u] = MakeBuffer(SensorData.GetHeader());
-    SequencedBuffer[1u] = MakeBuffer(SensorData.GetData());
-    TheStream.Write(SequencedBuffer);
-  }
+    void Write(const FSensorDataView &SensorData) final {
+      auto MakeBuffer = [](FReadOnlyBufferView View) {
+          return boost::asio::buffer(View.GetData(), View.GetSize());
+      };
+      std::array<boost::asio::const_buffer, 2u> SequencedBuffer;
+      SequencedBuffer[0u] = MakeBuffer(SensorData.GetHeader());
+      SequencedBuffer[1u] = MakeBuffer(SensorData.GetData());
+      TheStream.Write(SequencedBuffer);
+    }
 
 private:
 
-  carla::streaming::Stream TheStream;
+    carla::streaming::Stream TheStream;
 };
 
 // =============================================================================
@@ -78,78 +78,78 @@ class FTheNewCarlaServer::FPimpl
 {
 public:
 
-  FPimpl(uint16_t port)
-    : Server(port),
-      StreamingServer(port + 1u) {
-    BindActions();
-  }
+    FPimpl(uint16_t port)
+            : Server(port),
+              StreamingServer(port + 1u) {
+      BindActions();
+    }
 
-  carla::rpc::Server Server;
+    carla::rpc::Server Server;
 
-  carla::streaming::Server StreamingServer;
+    carla::streaming::Server StreamingServer;
 
-  UCarlaEpisode *Episode = nullptr;
+    UCarlaEpisode *Episode = nullptr;
 
 private:
 
-  void BindActions();
+    void BindActions();
 
-  void RespondErrorStr(const std::string &ErrorMessage) {
-    UE_LOG(LogCarlaServer, Log, TEXT("Responding error, %s"), *carla::rpc::ToFString(ErrorMessage));
-    carla::rpc::Server::RespondError(ErrorMessage);
-  }
-
-  void RespondError(const FString &ErrorMessage) {
-    RespondErrorStr(carla::rpc::FromFString(ErrorMessage));
-  }
-
-  void RequireEpisode()
-  {
-    if (Episode == nullptr)
-    {
-      RespondErrorStr("episode not ready");
+    void RespondErrorStr(const std::string &ErrorMessage) {
+      UE_LOG(LogCarlaServer, Log, TEXT("Responding error, %s"), *carla::rpc::ToFString(ErrorMessage));
+      carla::rpc::Server::RespondError(ErrorMessage);
     }
-  }
 
-  auto SpawnActor(const FTransform &Transform, FActorDescription Description)
-  {
-    auto Result = Episode->SpawnActorWithInfo(Transform, std::move(Description));
-    if (Result.Key != EActorSpawnResultStatus::Success)
-    {
-      RespondError(FActorSpawnResult::StatusToString(Result.Key));
+    void RespondError(const FString &ErrorMessage) {
+      RespondErrorStr(carla::rpc::FromFString(ErrorMessage));
     }
-    check(Result.Value.IsValid());
-    return Result.Value;
-  }
 
-  void AttachActors(FActorView Child, FActorView Parent)
-  {
-    if (!Child.IsValid())
+    void RequireEpisode()
     {
-      RespondErrorStr("unable to attach actor: child actor not found");
-    }
-    if (!Parent.IsValid())
-    {
-      RespondErrorStr("unable to attach actor: parent actor not found");
-    }
-    ::AttachActors(Child.GetActor(), Parent.GetActor());
-  }
-
-  carla::rpc::Actor SerializeActor(FActorView ActorView)
-  {
-    if (ActorView.IsValid())
-    {
-      auto *Sensor = Cast<ASensor>(ActorView.GetActor());
-      if (Sensor != nullptr)
+      if (Episode == nullptr)
       {
-        UE_LOG(LogCarlaServer, Log, TEXT("Making a new sensor stream for actor '%s'"), *ActorView.GetActorDescription()->Id);
-        auto Stream = StreamingServer.MakeStream();
-        Sensor->SetSensorDataSink(MakeShared<FStreamingSensorDataSink>(Stream));
-        return {ActorView, Stream.token()};
+        RespondErrorStr("episode not ready");
       }
     }
-    return ActorView;
-  }
+
+    auto SpawnActor(const FTransform &Transform, FActorDescription Description)
+    {
+      auto Result = Episode->SpawnActorWithInfo(Transform, std::move(Description));
+      if (Result.Key != EActorSpawnResultStatus::Success)
+      {
+        RespondError(FActorSpawnResult::StatusToString(Result.Key));
+      }
+      check(Result.Value.IsValid());
+      return Result.Value;
+    }
+
+    void AttachActors(FActorView Child, FActorView Parent)
+    {
+      if (!Child.IsValid())
+      {
+        RespondErrorStr("unable to attach actor: child actor not found");
+      }
+      if (!Parent.IsValid())
+      {
+        RespondErrorStr("unable to attach actor: parent actor not found");
+      }
+      ::AttachActors(Child.GetActor(), Parent.GetActor());
+    }
+
+    carla::rpc::Actor SerializeActor(FActorView ActorView)
+    {
+      if (ActorView.IsValid())
+      {
+        auto *Sensor = Cast<ASensor>(ActorView.GetActor());
+        if (Sensor != nullptr)
+        {
+          UE_LOG(LogCarlaServer, Log, TEXT("Making a new sensor stream for actor '%s'"), *ActorView.GetActorDescription()->Id);
+          auto Stream = StreamingServer.MakeStream();
+          Sensor->SetSensorDataSink(MakeShared<FStreamingSensorDataSink>(Stream));
+          return {ActorView, Stream.token()};
+        }
+      }
+      return ActorView;
+    }
 };
 
 // =============================================================================
@@ -165,132 +165,158 @@ void FTheNewCarlaServer::FPimpl::BindActions()
   Server.BindAsync("version", []() { return std::string(carla::version()); });
 
   Server.BindSync("get_actor_definitions", [this]() {
-    RequireEpisode();
-    return MakeVectorFromTArray<cr::ActorDefinition>(Episode->GetActorDefinitions());
+      RequireEpisode();
+      return MakeVectorFromTArray<cr::ActorDefinition>(Episode->GetActorDefinitions());
   });
 
+  Server.BindAsync("set_scene", [this](cr::Actor Actor, const std::string& scene)  {
+      RequireEpisode();
+
+      auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to apply control: actor not found");
+      }
+
+      auto MapGen = Cast<AMacchinaCityMapGenerator>(ActorView.GetActor());
+      if (MapGen == nullptr) {
+        RespondErrorStr("unable to apply control: actor is not a vehicle");
+      }
+
+      MapGen->GenerateScene(scene);
+
+      }
+  );
+
   Server.BindSync("get_spectator", [this]() -> cr::Actor {
-    RequireEpisode();
-    auto ActorView = Episode->GetActorRegistry().Find(Episode->GetSpectatorPawn());
-    if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
-      RespondErrorStr("unable to find spectator");
-    }
-    return ActorView;
+      RequireEpisode();
+      UE_LOG(LogCarlaServer, Log, TEXT("Trying to get spectator view"));
+
+      auto ActorView = Episode->GetActorRegistry().Find(Episode->GetSpectatorPawn());
+      UE_LOG(LogCarlaServer, Log, TEXT("Got spectator view"));
+
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to find spectator");
+      }
+      auto v = (cr::Actor) ActorView;
+      UE_LOG(LogCarlaServer, Log, TEXT("id %d"),v.GetActorDescription().class_id);
+      UE_LOG(LogCarlaServer, Log, TEXT("Casted to other view"));
+
+      return ActorView;
   });
 
   Server.BindSync("spawn_actor", [this](
-      const cr::Transform &Transform,
-      cr::ActorDescription Description) -> cr::Actor {
-    RequireEpisode();
-    return SerializeActor(SpawnActor(Transform, Description));
+          const cr::Transform &Transform,
+          cr::ActorDescription Description) -> cr::Actor {
+      RequireEpisode();
+      return SerializeActor(SpawnActor(Transform, Description));
   });
 
   Server.BindSync("spawn_actor_with_parent", [this](
-      const cr::Transform &Transform,
-      cr::ActorDescription Description,
-      cr::Actor Parent) -> cr::Actor {
-    RequireEpisode();
-    auto ActorView = SpawnActor(Transform, Description);
-    auto ParentActorView = Episode->GetActorRegistry().Find(Parent.id);
-    AttachActors(ActorView, ParentActorView);
-    return SerializeActor(ActorView);
+          const cr::Transform &Transform,
+          cr::ActorDescription Description,
+          cr::Actor Parent) -> cr::Actor {
+      RequireEpisode();
+      auto ActorView = SpawnActor(Transform, Description);
+      auto ParentActorView = Episode->GetActorRegistry().Find(Parent.id);
+      AttachActors(ActorView, ParentActorView);
+      return SerializeActor(ActorView);
   });
 
   Server.BindSync("destroy_actor", [this](cr::Actor Actor) {
-    RequireEpisode();
-    auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
-    if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
-      RespondErrorStr("unable to destroy actor: actor not found");
-    }
-    Episode->DestroyActor(ActorView.GetActor());
+      RequireEpisode();
+      auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to destroy actor: actor not found");
+      }
+      Episode->DestroyActor(ActorView.GetActor());
   });
 
   Server.BindSync("attach_actors", [this](cr::Actor Child, cr::Actor Parent) {
-    RequireEpisode();
-    auto &Registry = Episode->GetActorRegistry();
-    AttachActors(Registry.Find(Child.id), Registry.Find(Parent.id));
+      RequireEpisode();
+      auto &Registry = Episode->GetActorRegistry();
+      AttachActors(Registry.Find(Child.id), Registry.Find(Parent.id));
   });
 
   Server.BindSync("get_actor_location", [this](cr::Actor Actor) -> cr::Location {
-    RequireEpisode();
-    auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
-    if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
-      RespondErrorStr("unable to get actor location: actor not found");
-    }
-    return {ActorView.GetActor()->GetActorLocation()};
+      RequireEpisode();
+      auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to get actor location: actor not found");
+      }
+      return {ActorView.GetActor()->GetActorLocation()};
   });
 
   Server.BindSync("get_actor_transform", [this](cr::Actor Actor) -> cr::Transform {
-    RequireEpisode();
-    auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
-    if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
-      RespondErrorStr("unable to get actor transform: actor not found");
-    }
-    return {ActorView.GetActor()->GetActorTransform()};
+      RequireEpisode();
+      auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to get actor transform: actor not found");
+      }
+      return {ActorView.GetActor()->GetActorTransform()};
   });
 
   Server.BindSync("set_actor_location", [this](
-      cr::Actor Actor,
-      cr::Location Location) -> bool {
-    RequireEpisode();
-    auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
-    if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
-      RespondErrorStr("unable to set actor location: actor not found");
-    }
-    // This function only works with teleport physics, to reset speeds we need
-    // another method.
-    return ActorView.GetActor()->SetActorLocation(
-        Location,
-        false,
-        nullptr,
-        ETeleportType::TeleportPhysics);
+          cr::Actor Actor,
+          cr::Location Location) -> bool {
+      RequireEpisode();
+      auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to set actor location: actor not found");
+      }
+      // This function only works with teleport physics, to reset speeds we need
+      // another method.
+      return ActorView.GetActor()->SetActorLocation(
+              Location,
+              false,
+              nullptr,
+              ETeleportType::TeleportPhysics);
   });
 
   Server.BindSync("set_actor_transform", [this](
-      cr::Actor Actor,
-      cr::Transform Transform) -> bool {
-    RequireEpisode();
-    auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
-    if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
-      RespondErrorStr("unable to set actor transform: actor not found");
-    }
-    // This function only works with teleport physics, to reset speeds we need
-    // another method.
-    return ActorView.GetActor()->SetActorTransform(
-        Transform,
-        false,
-        nullptr,
-        ETeleportType::TeleportPhysics);
+          cr::Actor Actor,
+          cr::Transform Transform) -> bool {
+      RequireEpisode();
+      auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to set actor transform: actor not found");
+      }
+      // This function only works with teleport physics, to reset speeds we need
+      // another method.
+      return ActorView.GetActor()->SetActorTransform(
+              Transform,
+              false,
+              nullptr,
+              ETeleportType::TeleportPhysics);
   });
 
   Server.BindSync("apply_control_to_actor", [this](cr::Actor Actor, cr::VehicleControl Control) {
-    RequireEpisode();
-    auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
-    if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
-      RespondErrorStr("unable to apply control: actor not found");
-    }
-    auto Vehicle = Cast<ACarlaWheeledVehicle>(ActorView.GetActor());
-    if (Vehicle == nullptr) {
-      RespondErrorStr("unable to apply control: actor is not a vehicle");
-    }
-    Vehicle->ApplyVehicleControl(Control);
+      RequireEpisode();
+      auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to apply control: actor not found");
+      }
+      auto Vehicle = Cast<ACarlaWheeledVehicle>(ActorView.GetActor());
+      if (Vehicle == nullptr) {
+        RespondErrorStr("unable to apply control: actor is not a vehicle");
+      }
+      Vehicle->ApplyVehicleControl(Control);
   });
 
   Server.BindSync("set_actor_autopilot", [this](cr::Actor Actor, bool bEnabled) {
-    RequireEpisode();
-    auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
-    if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
-      RespondErrorStr("unable to set autopilot: actor not found");
-    }
-    auto Vehicle = Cast<ACarlaWheeledVehicle>(ActorView.GetActor());
-    if (Vehicle == nullptr) {
-      RespondErrorStr("unable to set autopilot: actor is not a vehicle");
-    }
-    auto Controller = Cast<AWheeledVehicleAIController>(Vehicle->GetController());
-    if (Controller == nullptr) {
-      RespondErrorStr("unable to set autopilot: vehicle has an incompatible controller");
-    }
-    Controller->SetAutopilot(bEnabled);
+      RequireEpisode();
+      auto ActorView = Episode->GetActorRegistry().Find(Actor.id);
+      if (!ActorView.IsValid() || ActorView.GetActor()->IsPendingKill()) {
+        RespondErrorStr("unable to set autopilot: actor not found");
+      }
+      auto Vehicle = Cast<ACarlaWheeledVehicle>(ActorView.GetActor());
+      if (Vehicle == nullptr) {
+        RespondErrorStr("unable to set autopilot: actor is not a vehicle");
+      }
+      auto Controller = Cast<AWheeledVehicleAIController>(Vehicle->GetController());
+      if (Controller == nullptr) {
+        RespondErrorStr("unable to set autopilot: vehicle has an incompatible controller");
+      }
+      Controller->SetAutopilot(bEnabled);
   });
 }
 
