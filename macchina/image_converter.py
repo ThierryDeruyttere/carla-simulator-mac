@@ -69,8 +69,8 @@ def labels_to_cityscapes_palette(image):
     print array
     result = numpy.zeros((array.shape[0], array.shape[1], 3))
     for key, value in classes.items():
-        mutex.aquire()
-        print key, len(numpy.where(array == key))
+        mutex.acquire()
+        print key, numpy.where(array == key)
         mutex.release()
         result[numpy.where(array == key)] = value
     return result

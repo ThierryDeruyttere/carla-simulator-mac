@@ -128,11 +128,13 @@ def save_to_disk(image, name):
         os.makedirs(folder)
     image.save(filename)
 
+i = 1
 def save_semantic_img(image, name):
+    global i
     res = labels_to_cityscapes_palette(image)
 
-    filename = '{}/1.png'.format(name)
-
+    filename = '{}/{}.png'.format(name,i)
+    i+=1
     try:
         from PIL import Image as PImage
     except ImportError:
