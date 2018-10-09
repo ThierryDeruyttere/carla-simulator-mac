@@ -26,10 +26,13 @@ spectator = world.get_spectator()
 HALF_PI = math.pi/2
 PI = math.pi
 
+# x,y,z and angle are the position and angle of the spawning point in the world
 macchina = Macchina(client, x=0, y=0, z=2, angle=0)
 
 # Spawn a roadpart
-macchina.addObject(MeshTag.RoadTwoLanes_LaneLeft, 0, 0, HALF_PI)
+x=0
+y=0
+macchina.addObject(MeshTag.RoadTwoLanes_LaneLeft, x, y, HALF_PI)
 
 # Spawn the things
 macchina.spawn()
