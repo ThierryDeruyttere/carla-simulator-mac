@@ -8,6 +8,7 @@ Examples of spawned scenes
 
 ![](../imgs/Third.png)
 
+To spawn these images, run the game and then execute mesh.py
 ### How to spawn static meshes with python
 
 ```
