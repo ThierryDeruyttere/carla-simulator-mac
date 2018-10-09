@@ -19,5 +19,5 @@ class Macchina:
     def addObject(self, objectTag, x, y, angle=0):
         self.scene["map"].append({"obj": int(objectTag), "x": x, "y": y, "angle": angle})
 
-    def draw(self):
+    def spawn(self):
         self.generator.set_scene(json.dumps(self.scene))

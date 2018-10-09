@@ -170,9 +170,9 @@ transform = Transform(LOC, Rotation(yaw=90))
 cam2 = world.spawn_actor(blueprint, transform)
 cam2.listen(lambda image: save_semantic_img(image, "semantic"))
 
-time.sleep(2)
+time.sleep(4)
 m1 = createRoad()
-m1.draw()
+m1.spawn()
 
 LOC = Location(x=-2, y=-4, z=3)
 transform = Transform(LOC, Rotation(yaw=90))
@@ -180,12 +180,12 @@ spectator.set_transform(transform)
 
 time.sleep(4)
 m2 = createHouses()
-m2.draw()
+m2.spawn()
 
 time.sleep(4)
 m3 = createBenches()
-m3.draw()
+m3.spawn()
 
 time.sleep(4)
 m4 = createVehicles()
-m4.draw()
+m4.spawn()
