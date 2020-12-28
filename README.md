@@ -1,3 +1,5 @@
+Note: This fork is really out of date with the current version of CARLA. 
+
 CARLA Simulator
 ===============
 
